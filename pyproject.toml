@@ -3,6 +3,7 @@ name = "promprint-database"
 version = "0.2.0"
 description = "A django-based front end for editing and interacting with the promprint database."
 readme = "README.md"
+license = "GPL-3.0-or-later"
 requires-python = ">=3.13"
 dependencies = [
     "django>=5.2.5",
