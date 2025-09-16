@@ -1,0 +1,21 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: promprint records
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Nicolas
+    family-names: Seymour-Smith
+    email: nrs23@sussex.ac.uk
+    affiliation: University of Sussex
+    orcid: 'https://orcid.org/0009-0008-2177-2153'
+repository-code: 'https://github.com/shldigital/promprint-records'
+url: 'https://cordis.europa.eu/project/id/101163126'
+abstract: >-
+  Promprint will explore rejects of legal deposit in
+  19th-century UK libraries
+license: GPL-3.0-or-later
