@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from dotenv import load_dotenv
 import os
 from pathlib import Path
+from import_export.formats.base_formats import CSV, TSV
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -156,3 +157,6 @@ LOGGING = {
         },
     },
 }
+
+# Import export formats
+IMPORT_FORMATS = [CSV, TSV]
