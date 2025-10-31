@@ -103,11 +103,11 @@ class Register(models.Model):
 class LibraryEntry(models.Model):
 
     class Library(models.TextChoices):
-        BODLEIAN_LIBRARY = "BOL", _("Bodleian Library")
-        BRITISH_LIBRARY = "BRL", _("British Library")
+        BODLEIAN_LIBRARY = "BDL", _("Bodleian Library")
+        BRITISH_LIBRARY = "BTL", _("British Library")
         CAMBRIDGE_LIBRARY = "CAL", _("Cambridge Library")
-        SCOTLAND_LIBRARY = "SCL", _("National Library of Scotland")
-        TRINITY_LIBRARY = "TRL", _("Trinity College Dublin Library")
+        SCOTLAND_LIBRARY = "NLS", _("National Library of Scotland")
+        TRINITY_LIBRARY = "TCD", _("Trinity College Dublin Library")
 
     source_library = models.CharField(max_length=3,
                                       choices=Library,
