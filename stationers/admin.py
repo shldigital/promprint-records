@@ -6,7 +6,6 @@ from import_export import fields, resources, widgets
 
 
 def redo_match_search(modeladmin, request, queryset):
-    # Saving RegisterEntry objects will trigger the search function
     for register in queryset:
         entries = RegisterEntry.objects.filter(register=register.id)
         for entry in entries:
