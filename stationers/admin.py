@@ -1,3 +1,4 @@
+import datetime
 from django.contrib import admin
 from .models import (Register, RegisterEntry, LibraryEntry, MatchCandidate,
                      search_for_match)
@@ -6,10 +7,16 @@ from import_export import fields, resources, widgets
 
 
 def redo_match_search(modeladmin, request, queryset):
+    start = datetime.datetime.now()
+    print(f"match search starts: {start}")
     for register in queryset:
         entries = RegisterEntry.objects.filter(register=register.id)
         for entry in entries:
             search_for_match(entry, LibraryEntry)
+
+    end = datetime.datetime.now()
+    print(f"match search ends: {end}")
+    print(f"match takes: {end - start}")
 
 
 redo_match_search.short_description = "Redo match search on each entry" \
@@ -76,15 +83,17 @@ class LibraryEntryResource(resources.ModelResource):
     class Meta:
         skip_unchanged = True
         report_skipped = False
-        fields = ('id', 'source_library', 'register', 'date', 'author',
-                  'title')
+        fields = ('id', 'source_library', 'register', 'min_date', 'max_date',
+                  'author', 'title')
         model = LibraryEntry
 
 
 class LibraryEntryAdmin(ImportExportModelAdmin):
     resource_classes = [LibraryEntryResource]
     inlines = [MatchInline]
-    list_display = ["title", "author", "date", "source_library"]
+    list_display = [
+        "title", "author", "min_date", "max_date", "source_library"
+    ]
     list_filter = ["source_library"]
     search_fields = ["title", "author"]
 

@@ -1,3 +1,4 @@
+import datetime
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 import logging
@@ -28,6 +29,8 @@ def search_for_match(entry, collection_class):
     """
     Finds and creates matches for a given entry in a collection.
     """
+    start = datetime.datetime.now()
+    logger.debug(f"Search for {entry} match starts: {start}")
     registers = []
     is_register_entry = True
 
@@ -82,11 +85,14 @@ def search_for_match(entry, collection_class):
                               relevant_entries.get(pk=matched_entry["id"]),
                               is_register_entry, "FZP")
         logger.debug(f"Entry: {entry}")
-        logger.debug(f"Relevant collection entries: {relevant_entries}")
-        logger.debug(f"All scores: {scores}")
-        logger.debug(f"Matched titles: {matched_titles}")
-        logger.debug(f"Unmatched titles: {unmatched_titles}")
-        logger.debug(f"fuzzy titles: {fuzzy_titles}")
+        logger.debug(f"Relevant collection entries: {len(relevant_entries)}")
+        logger.debug(f"Matched titles: {len(matched_titles)}")
+        logger.debug(f"Unmatched titles: {len(unmatched_titles)}")
+        logger.debug(f"fuzzy titles: {len(fuzzy_titles)}")
+
+        end = datetime.datetime.now()
+        logger.debug(f"Search for {entry} match ends: {end}")
+        logger.debug(f"Search for {entry} match takes: {end - start}")
 
 
 class Register(models.Model):
@@ -113,7 +119,8 @@ class LibraryEntry(models.Model):
                                       choices=Library,
                                       default=Library.BRITISH_LIBRARY)
     register = models.ManyToManyField(Register)
-    date = models.DateField("date of entry")
+    min_date = models.DateField("earliest date of entry")
+    max_date = models.DateField("latest date of entry")
     author = models.CharField(max_length=100)
     title = models.CharField(max_length=500)
     volumes = models.CharField(max_length=100, blank=True)
