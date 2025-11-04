@@ -102,8 +102,17 @@ class LibraryEntryAdmin(ImportExportModelAdmin):
     search_fields = ["title", "author"]
 
 
-class MatchAdmin(admin.ModelAdmin):
+class MatchResource(resources.ModelResource):
+    class Meta:
+        skip_unchanged = True
+        report_skipped = False
+        fields = ('match_type', 'register_entry__title', 'library_entry__title')
+        model = MatchCandidate
+
+
+class MatchAdmin(ImportExportModelAdmin):
     actions = [delete_all]
+    resource_classes = [MatchResource]
     list_display = [
         "match_type", "register_entry__title", "library_entry__title",
         "register_entry__author", "library_entry__author",
