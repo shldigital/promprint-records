@@ -67,7 +67,7 @@ def search_for_match(entry, collection_class):
         # Find entries with similar title
         unmatched_titles = list(
             filter(lambda s: s not in matched_titles, scores))
-        match_threshold = 70
+        match_threshold = 65
         fuzzy_titles = list(
             filter(lambda s: s["title_score"] > match_threshold,
                    unmatched_titles))
