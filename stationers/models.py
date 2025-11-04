@@ -100,7 +100,7 @@ class Register(models.Model):
     start_date = models.DateField("register start date")
     end_date = models.DateField("register end date")
     pages = models.IntegerField(default=0)
-    file = models.FileField(upload_to="register_pdfs")
+    file = models.FileField(upload_to="register_pdfs", blank=True)
 
     def __str__(self):
         return self.name
