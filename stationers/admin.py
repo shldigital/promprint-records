@@ -23,6 +23,10 @@ redo_match_search.short_description = "Redo match search on each entry" \
                                       " in selected registers"
 
 
+def delete_all(modeladmin, request, queryset):
+    queryset.delete()
+
+
 class RegisterAdmin(admin.ModelAdmin):
     list_display = ["name", "pages", "file", "_entry_count"]
     actions = [redo_match_search]
@@ -99,6 +103,7 @@ class LibraryEntryAdmin(ImportExportModelAdmin):
 
 
 class MatchAdmin(admin.ModelAdmin):
+    actions = [delete_all]
     list_display = [
         "match_type", "register_entry__title", "library_entry__title",
         "register_entry__author", "library_entry__author",
