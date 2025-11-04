@@ -2,25 +2,28 @@ import datetime
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 import logging
+import re
 
 from thefuzz import fuzz
 
 logger = logging.getLogger(__name__)
 
 
-def _create_match(entry, matched_entry, is_register_entry, match_type):
+def _create_match(entry, matched_entry, is_register_entry, match_type, score):
     """
     Helper function to create a Match object.
     """
     if is_register_entry:
         entries_dict = {
             'register_entry': entry,
-            'library_entry': matched_entry
+            'library_entry': matched_entry,
+            'score': score
         }
     else:
         entries_dict = {
             'register_entry': matched_entry,
-            'library_entry': entry
+            'library_entry': entry,
+            'score': score
         }
     MatchCandidate.objects.get_or_create(match_type=match_type, **entries_dict)
 
@@ -40,6 +43,7 @@ def search_for_match(entry, collection_class):
     elif isinstance(entry, RegisterEntry):
         registers.append(entry.register)
 
+    clean_title = re.sub(r'[^a-zA-Z0-9]', ' ', entry.title)
     for register in registers:
         relevant_entries = collection_class.objects.filter(
             register=register.id)
@@ -47,44 +51,31 @@ def search_for_match(entry, collection_class):
             "id":
             collection_entry.id,
             "title_score":
-            fuzz.ratio(entry.title, collection_entry.title),
-            "author_score":
-            fuzz.ratio(entry.author, collection_entry.author)
+            fuzz.ratio(clean_title,
+                       re.sub(r'[^a-zA-Z0-9]', ' ', collection_entry.title)),
         } for collection_entry in relevant_entries]
 
-        # Find entries with the same title in the collection
+        # Find entries with the same string in each title
         matched_titles = list(filter(lambda s: s["title_score"] == 100,
                                      scores))
 
         for matched_entry in matched_titles:
-            # Check if the author also matches for an exact match
-            if matched_entry["author_score"] == 100:
-                _create_match(entry,
-                              relevant_entries.get(pk=matched_entry["id"]),
-                              is_register_entry, "EXC")
-            else:
-                _create_match(entry,
-                              relevant_entries.get(pk=matched_entry["id"]),
-                              is_register_entry, "PAR")
+            _create_match(entry, relevant_entries.get(pk=matched_entry["id"]),
+                          is_register_entry, "EXC",
+                          matched_entry["title_score"])
 
         # Find entries with similar title
         unmatched_titles = list(
             filter(lambda s: s not in matched_titles, scores))
-        match_threshold = 80
+        match_threshold = 70
         fuzzy_titles = list(
             filter(lambda s: s["title_score"] > match_threshold,
                    unmatched_titles))
         for matched_entry in fuzzy_titles:
-            # Check if the author also similar
-            if matched_entry["author_score"] > match_threshold:
-                _create_match(entry,
-                              relevant_entries.get(pk=matched_entry["id"]),
-                              is_register_entry, "FUZ")
-            else:
-                _create_match(entry,
-                              relevant_entries.get(pk=matched_entry["id"]),
-                              is_register_entry, "FZP")
-        logger.debug(f"Entry: {entry}")
+            _create_match(entry, relevant_entries.get(pk=matched_entry["id"]),
+                          is_register_entry, "FUZ",
+                          matched_entry["title_score"])
+        logger.debug(f"Entry: {clean_title}")
         logger.debug(f"Relevant collection entries: {len(relevant_entries)}")
         logger.debug(f"Matched titles: {len(matched_titles)}")
         logger.debug(f"Unmatched titles: {len(unmatched_titles)}")
@@ -119,8 +110,10 @@ class LibraryEntry(models.Model):
                                       choices=Library,
                                       default=Library.BRITISH_LIBRARY)
     register = models.ManyToManyField(Register)
-    min_date = models.DateField("earliest date of entry")
-    max_date = models.DateField("latest date of entry")
+    min_date = models.DateField("earliest date of entry",
+                                blank=True,
+                                null=True)
+    max_date = models.DateField("latest date of entry", blank=True, null=True)
     author = models.CharField(max_length=100)
     title = models.CharField(max_length=500)
     volumes = models.CharField(max_length=100, blank=True)
@@ -157,13 +150,12 @@ class MatchCandidate(models.Model):
         YES = "YES", _("Confirmed")
         REJECTED = "REJ", _("Rejected")
 
-    match_type = models.CharField(max_length=3,
-                                  choices=MatchType,
-                                  null=True)
+    match_type = models.CharField(max_length=3, choices=MatchType, null=True)
     register_entry = models.ForeignKey(RegisterEntry, on_delete=models.CASCADE)
     library_entry = models.ForeignKey(LibraryEntry,
                                       on_delete=models.CASCADE,
                                       null=True)
+    score = models.IntegerField(default=0)
     match_confirmed = models.CharField(max_length=3,
                                        choices=MatchConfirmed,
                                        default=MatchConfirmed.NOT)

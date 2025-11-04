@@ -1,22 +1,23 @@
 import datetime
 from django.contrib import admin
+import logging
 from .models import (Register, RegisterEntry, LibraryEntry, MatchCandidate,
                      search_for_match)
 from import_export.admin import ImportExportModelAdmin
 from import_export import fields, resources, widgets
 
+logger = logging.getLogger(__name__)
+
 
 def redo_match_search(modeladmin, request, queryset):
     start = datetime.datetime.now()
-    print(f"match search starts: {start}")
     for register in queryset:
         entries = RegisterEntry.objects.filter(register=register.id)
         for entry in entries:
             search_for_match(entry, LibraryEntry)
 
     end = datetime.datetime.now()
-    print(f"match search ends: {end}")
-    print(f"match takes: {end - start}")
+    logger.info(f"match search process takes: {end - start}")
 
 
 redo_match_search.short_description = "Redo match search on each entry" \
@@ -103,10 +104,12 @@ class LibraryEntryAdmin(ImportExportModelAdmin):
 
 
 class MatchResource(resources.ModelResource):
+
     class Meta:
         skip_unchanged = True
         report_skipped = False
-        fields = ('match_type', 'register_entry__title', 'library_entry__title')
+        fields = ('match_type', 'score', 'register_entry__title',
+                  'library_entry__title')
         model = MatchCandidate
 
 
@@ -114,13 +117,13 @@ class MatchAdmin(ImportExportModelAdmin):
     actions = [delete_all]
     resource_classes = [MatchResource]
     list_display = [
-        "match_type", "register_entry__title", "library_entry__title",
+        "match_type", "score", "register_entry__title", "library_entry__title",
         "register_entry__author", "library_entry__author",
         "register_entry__register", "library_entry__source_library",
         "match_confirmed"
     ]
     list_filter = [
-        "register_entry__register", "library_entry__source_library",
+        "score", "register_entry__register", "library_entry__source_library",
         "match_type", "match_confirmed"
     ]
     search_fields = [
