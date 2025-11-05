@@ -43,7 +43,7 @@ def search_for_match(entry, collection_class):
     elif isinstance(entry, RegisterEntry):
         registers.append(entry.register)
 
-    clean_title = re.sub(r'[^a-zA-Z0-9]', ' ', entry.title)
+    clean_title = re.sub(r'[^a-zA-Z0-9]', ' ', entry.title).lower()
     for register in registers:
         relevant_entries = collection_class.objects.filter(
             register=register.id)
@@ -51,8 +51,9 @@ def search_for_match(entry, collection_class):
             "id":
             collection_entry.id,
             "title_score":
-            fuzz.ratio(clean_title,
-                       re.sub(r'[^a-zA-Z0-9]', ' ', collection_entry.title)),
+            fuzz.ratio(
+                clean_title,
+                re.sub(r'[^a-zA-Z0-9]', ' ', collection_entry.title).lower()),
         } for collection_entry in relevant_entries]
 
         # Find entries with the same string in each title
@@ -126,8 +127,8 @@ class LibraryEntry(models.Model):
 class RegisterEntry(models.Model):
 
     register = models.ForeignKey(Register, on_delete=models.CASCADE)
-    date = models.DateField("date of entry")
-    author = models.CharField(max_length=100)
+    date = models.DateField("date of entry", null=True)
+    author = models.CharField(max_length=100, null=True)
     title = models.CharField(max_length=500)
     volumes = models.CharField(max_length=100, blank=True)
     edition = models.CharField(max_length=100, blank=True)
