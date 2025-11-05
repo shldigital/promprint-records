@@ -28,6 +28,23 @@ def _create_match(entry, matched_entry, is_register_entry, match_type, score):
     MatchCandidate.objects.get_or_create(match_type=match_type, **entries_dict)
 
 
+def remove_metadata(title_string: str) -> str:
+    square_brackets_clean = re.sub(
+        r'\[(?:microform|illustrated|a novel|plates)\]', '',
+        title_string.lower())
+    editions_clean = re.sub(r'\b(?:n|ed|vol(?:s|ume|umes|))\b', '',
+                            square_brackets_clean)
+    return re.sub(r'\d{1,4}', '', editions_clean)
+
+
+def clean_title_string(title_string: str) -> str:
+    no_ampersand = re.sub(r'(&amp;|&)', 'and', title_string)
+    no_apostrophe = re.sub(r"['`]", '', no_ampersand)
+    alphanum = re.sub(r'[^a-zA-Z0-9]', ' ', no_apostrophe)
+    single_spaced = re.sub(r'\s{2,}', ' ', alphanum)
+    return single_spaced.strip().lower()
+
+
 def search_for_match(entry, collection_class):
     """
     Finds and creates matches for a given entry in a collection.
@@ -43,7 +60,7 @@ def search_for_match(entry, collection_class):
     elif isinstance(entry, RegisterEntry):
         registers.append(entry.register)
 
-    clean_title = re.sub(r'[^a-zA-Z0-9]', ' ', entry.title).lower()
+    clean_entry_title = clean_title_string(remove_metadata(entry.title))
     for register in registers:
         relevant_entries = collection_class.objects.filter(
             register=register.id)
@@ -52,8 +69,8 @@ def search_for_match(entry, collection_class):
             collection_entry.id,
             "title_score":
             fuzz.ratio(
-                clean_title,
-                re.sub(r'[^a-zA-Z0-9]', ' ', collection_entry.title).lower()),
+                clean_entry_title,
+                clean_title_string(remove_metadata(collection_entry.title)))
         } for collection_entry in relevant_entries]
 
         # Find entries with the same string in each title
@@ -76,7 +93,7 @@ def search_for_match(entry, collection_class):
             _create_match(entry, relevant_entries.get(pk=matched_entry["id"]),
                           is_register_entry, "FUZ",
                           matched_entry["title_score"])
-        logger.debug(f"Entry: {clean_title}")
+        logger.debug(f"Entry: {clean_entry_title}")
         logger.debug(f"Relevant collection entries: {len(relevant_entries)}")
         logger.debug(f"Matched titles: {len(matched_titles)}")
         logger.debug(f"Unmatched titles: {len(unmatched_titles)}")
