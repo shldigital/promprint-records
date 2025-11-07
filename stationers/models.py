@@ -106,10 +106,10 @@ def search_for_match(entry, collection_class):
 
 class Register(models.Model):
     name = models.CharField(max_length=100)
-    start_date = models.DateField("register start date")
-    end_date = models.DateField("register end date")
+    start_date = models.DateField("register start date", null=True, blank=True)
+    end_date = models.DateField("register end date", null=True, blank=True)
     pages = models.IntegerField(default=0)
-    file = models.FileField(upload_to="register_pdfs", blank=True)
+    file = models.FileField(upload_to="register_pdfs", blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -132,23 +132,23 @@ class LibraryEntry(models.Model):
                                 blank=True,
                                 null=True)
     max_date = models.DateField("latest date of entry", blank=True, null=True)
-    author = models.CharField(max_length=100)
+    author = models.CharField(max_length=100, blank=True, null=True)
     title = models.CharField(max_length=500)
     volumes = models.CharField(max_length=100, blank=True)
     edition = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
-        return f"{self.author}: {self.title}"
+        return f"{self.author[:10] + '...'}: {self.title.strip()}"
 
 
 class RegisterEntry(models.Model):
 
     register = models.ForeignKey(Register, on_delete=models.CASCADE)
-    date = models.DateField("date of entry", null=True)
-    author = models.CharField(max_length=100, null=True)
+    date = models.DateField("date of entry", blank=True, null=True)
+    author = models.CharField(max_length=100, blank=True, null=True)
     title = models.CharField(max_length=500)
-    volumes = models.CharField(max_length=100, blank=True)
-    edition = models.CharField(max_length=100, blank=True)
+    volumes = models.CharField(max_length=100, blank=True, null=True)
+    edition = models.CharField(max_length=100, blank=True, null=True)
     register_page = models.IntegerField(default=0)
 
     def __str__(self):
