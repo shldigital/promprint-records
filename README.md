@@ -5,7 +5,7 @@ This is currently a work in progress. Only the administration interface for the 
 
 Promprint will explore rejects of legal deposit in 19th-century UK libraries. The database enables this by storing and comparing separate tables of data:
 
-1) A reference table containing the title, author and date of all publications listed in the registers of the Stationer's Hall under the copyright act, for a set of dates that is the subject of this research project
+1) A reference table containing the title, creator and date of all publications listed in the registers of the Stationer's Hall under the copyright act, for a set of dates that is the subject of this research project
 
 2) A table for each of the UK legal deposit libraries, containing all publications (and associated metadata) received by those libraries during the years covered by the registers of the Stationer's Hall
 

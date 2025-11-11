@@ -52,7 +52,7 @@ class RegisterEntryResource(resources.ModelResource):
     class Meta:
         skip_unchanged = True
         report_skipped = False
-        fields = ('id', 'register', 'date', 'author', 'title')
+        fields = ('id', 'register', 'date', 'creator', 'title')
         model = RegisterEntry
 
 
@@ -60,10 +60,10 @@ class RegisterEntryAdmin(ImportExportModelAdmin):
     resource_classes = [RegisterEntryResource]
     inlines = [MatchInline]
     list_display = [
-        "title", "author", "date", "register", "_match_count", "_has_match"
+        "title", "creator", "date", "register", "_match_count", "_has_match"
     ]
     list_filter = ["register", "matchcandidate__match_confirmed"]
-    search_fields = ["title", "author"]
+    search_fields = ["title", "creator"]
 
     def _match_count(self, obj):
         return obj.matchcandidate_set.count()
@@ -89,7 +89,7 @@ class LibraryEntryResource(resources.ModelResource):
         skip_unchanged = True
         report_skipped = False
         fields = ('id', 'source_library', 'register', 'min_date', 'max_date',
-                  'author', 'title')
+                  'creator', 'title')
         model = LibraryEntry
 
 
@@ -97,10 +97,10 @@ class LibraryEntryAdmin(ImportExportModelAdmin):
     resource_classes = [LibraryEntryResource]
     inlines = [MatchInline]
     list_display = [
-        "title", "author", "min_date", "max_date", "source_library"
+        "title", "creator", "min_date", "max_date", "source_library"
     ]
     list_filter = ["source_library"]
-    search_fields = ["title", "author"]
+    search_fields = ["title", "creator"]
 
 
 class MatchResource(resources.ModelResource):
@@ -118,7 +118,7 @@ class MatchAdmin(ImportExportModelAdmin):
     resource_classes = [MatchResource]
     list_display = [
         "match_type", "score", "register_entry__title", "library_entry__title",
-        "register_entry__author", "library_entry__author",
+        "register_entry__creator", "library_entry__creator",
         "register_entry__register", "library_entry__source_library",
         "match_confirmed"
     ]
@@ -127,8 +127,8 @@ class MatchAdmin(ImportExportModelAdmin):
         "match_type", "match_confirmed"
     ]
     search_fields = [
-        "register_entry__title", "register_entry__author",
-        "library_entry__title", "library_entry__author"
+        "register_entry__title", "register_entry__creator",
+        "library_entry__title", "library_entry__creator"
     ]
 
 
