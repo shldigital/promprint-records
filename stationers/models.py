@@ -145,14 +145,14 @@ class RegisterEntry(models.Model):
 
     register = models.ForeignKey(Register, on_delete=models.CASCADE)
     date = models.DateField("date of entry", blank=True, null=True)
-    creator = models.CharField(max_length=100, blank=True, null=True)
+    publisher = models.CharField(max_length=100, blank=True, null=True)
     title = models.CharField(max_length=500)
     volumes = models.CharField(max_length=100, blank=True, null=True)
     edition = models.CharField(max_length=100, blank=True, null=True)
     register_page = models.IntegerField(default=0)
 
     def __str__(self):
-        return f"{self.creator}: {self.title}"
+        return f"{self.publisher}: {self.title}"
 
 
 class MatchCandidate(models.Model):

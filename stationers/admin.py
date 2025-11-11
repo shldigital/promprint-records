@@ -52,7 +52,7 @@ class RegisterEntryResource(resources.ModelResource):
     class Meta:
         skip_unchanged = True
         report_skipped = False
-        fields = ('id', 'register', 'date', 'creator', 'title')
+        fields = ('id', 'register', 'date', 'publisher', 'title')
         model = RegisterEntry
 
 
@@ -60,10 +60,10 @@ class RegisterEntryAdmin(ImportExportModelAdmin):
     resource_classes = [RegisterEntryResource]
     inlines = [MatchInline]
     list_display = [
-        "title", "creator", "date", "register", "_match_count", "_has_match"
+        "title", "publisher", "date", "register", "_match_count", "_has_match"
     ]
     list_filter = ["register", "matchcandidate__match_confirmed"]
-    search_fields = ["title", "creator"]
+    search_fields = ["title", "publisher"]
 
     def _match_count(self, obj):
         return obj.matchcandidate_set.count()
@@ -118,7 +118,7 @@ class MatchAdmin(ImportExportModelAdmin):
     resource_classes = [MatchResource]
     list_display = [
         "match_type", "score", "register_entry__title", "library_entry__title",
-        "register_entry__creator", "library_entry__creator",
+        "register_entry__publisher", "library_entry__creator",
         "register_entry__register", "library_entry__source_library",
         "match_confirmed"
     ]
@@ -127,7 +127,7 @@ class MatchAdmin(ImportExportModelAdmin):
         "match_type", "match_confirmed"
     ]
     search_fields = [
-        "register_entry__title", "register_entry__creator",
+        "register_entry__title", "register_entry__publisher",
         "library_entry__title", "library_entry__creator"
     ]
 
