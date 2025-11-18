@@ -95,23 +95,55 @@ class RegisterEntryAdmin(ImportExportModelAdmin):
     _match_count.short_description = "Match Candidate Count"
 
 
-class LibraryEntryResource(resources.ModelResource):
+class LibraryEntryImportResource(resources.ModelResource):
     register = fields.Field(column_name='register',
                             attribute='register',
                             widget=widgets.ManyToManyWidget(Register,
                                                             field='name',
                                                             separator='|'))
+    artifact_type_field = fields.Field(attribute='artifact_type',
+                                       column_name='type')
+    artifact_format_field = fields.Field(attribute='artifact_format',
+                                         column_name='format')
+    date_string_field = fields.Field(attribute='date_string',
+                                     column_name='date')
 
     class Meta:
         skip_unchanged = True
         report_skipped = False
-        fields = ('id', 'source_library', 'register', 'min_date', 'max_date',
-                  'creator', 'title')
+        import_id_fields = ('source_library', 'creator', 'title')
+        fields = ('title', 'clean_title', 'source_library', 'register',
+                  'min_date', 'max_date', 'creator', 'artifact_type_field',
+                  'publisher', 'date_string', 'language',
+                  'artifact_format_field', 'relation', 'rights', 'identifier',
+                  'description', 'subject', 'coverage', 'contributor',
+                  'source')
+        model = LibraryEntry
+
+
+class LibraryEntryExportResource(resources.ModelResource):
+    register = fields.Field(column_name='register',
+                            attribute='register',
+                            widget=widgets.ManyToManyWidget(Register,
+                                                            field='name',
+                                                            separator='|'))
+    artifact_type_field = fields.Field(attribute='artifact_type',
+                                       column_name='type')
+    artifact_format_field = fields.Field(attribute='artifact_format',
+                                         column_name='format')
+
+    class Meta:
+        fields = ('id', 'title', 'clean_title', 'source_library', 'register',
+                  'min_date', 'max_date', 'creator', 'artifact_type_field',
+                  'publisher', 'date_string', 'language',
+                  'artifact_format_field', 'relation', 'rights', 'identifier',
+                  'description', 'subject', 'coverage', 'contributor',
+                  'source')
         model = LibraryEntry
 
 
 class LibraryEntryAdmin(ImportExportModelAdmin):
-    resource_classes = [LibraryEntryResource]
+    resource_classes = [LibraryEntryImportResource, LibraryEntryExportResource]
     inlines = [MatchInline]
     list_display = [
         "title", "creator", "min_date", "max_date", "source_library"
