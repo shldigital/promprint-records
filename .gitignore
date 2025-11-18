@@ -18,6 +18,5 @@ db.sqlite3
 db.json
 
 # Django
-*/migrations/
 .env
 static/
