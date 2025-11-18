@@ -127,18 +127,32 @@ class LibraryEntry(models.Model):
     source_library = models.CharField(max_length=3,
                                       choices=Library,
                                       default=Library.BRITISH_LIBRARY)
+    title = models.CharField(max_length=500)
     register = models.ManyToManyField(Register)
     min_date = models.DateField("earliest date of entry",
                                 blank=True,
                                 null=True)
     max_date = models.DateField("latest date of entry", blank=True, null=True)
     creator = models.CharField(max_length=100, blank=True, null=True)
-    title = models.CharField(max_length=500)
+    clean_title = models.CharField(max_length=500, blank=True, null=True)
+    artifact_type = models.CharField(max_length=100, blank=True, null=True)
+    publisher = models.CharField(max_length=500, blank=True, null=True)
+    date_string = models.CharField(max_length=100, blank=True)
+    language = models.CharField(max_length=100, blank=True)
+    artifact_format = models.CharField(max_length=100, blank=True)
+    relation = models.CharField(max_length=500, blank=True, null=True)
+    rights = models.CharField(max_length=500, blank=True, null=True)
+    identifier = models.CharField(max_length=500, blank=True, null=True)
+    description = models.CharField(max_length=500, blank=True, null=True)
+    subject = models.CharField(max_length=500, blank=True, null=True)
+    coverage = models.CharField(max_length=500, blank=True, null=True)
+    contributor = models.CharField(max_length=500, blank=True, null=True)
+    source = models.CharField(max_length=500, blank=True, null=True)
     volumes = models.CharField(max_length=100, blank=True)
     edition = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
-        return f"{self.creator[:10] + '...'}: {self.title.strip()}"
+        return f"{self.source_library}: {self.title}"
 
 
 class RegisterEntry(models.Model):
