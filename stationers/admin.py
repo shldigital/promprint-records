@@ -77,13 +77,10 @@ class RegisterEntryAdmin(ImportExportModelAdmin):
     inlines = [MatchInline]
     list_display = [
         "title", "publisher", "creator", "register", "block", "page", "line",
-        "_match_count", "_has_match"
+        "match_candidate_count", "_has_match"
     ]
     list_filter = ["register", "matchcandidate__match_confirmed"]
     search_fields = ["title", "publisher"]
-
-    def _match_count(self, obj):
-        return obj.matchcandidate_set.count()
 
     @admin.display(boolean=True)
     def _has_match(self, obj):
@@ -91,8 +88,6 @@ class RegisterEntryAdmin(ImportExportModelAdmin):
             filter(lambda m: m.match_confirmed == m.MatchConfirmed.YES,
                    obj.matchcandidate_set.all()))
         return len(matched) > 0
-
-    _match_count.short_description = "Match Candidate Count"
 
 
 class LibraryEntryImportResource(resources.ModelResource):
@@ -114,7 +109,7 @@ class LibraryEntryImportResource(resources.ModelResource):
         import_id_fields = ('source_library', 'creator', 'title')
         fields = ('title', 'clean_title', 'source_library', 'register',
                   'min_date', 'max_date', 'creator', 'artifact_type_field',
-                  'publisher', 'date_string', 'language',
+                  'publisher', 'date_string_field', 'language',
                   'artifact_format_field', 'relation', 'rights', 'identifier',
                   'description', 'subject', 'coverage', 'contributor',
                   'source')

@@ -168,6 +168,11 @@ class RegisterEntry(models.Model):
     page = models.IntegerField(blank=True, null=True)
     line = models.IntegerField(blank=True, null=True)
     creator = models.CharField(max_length=1000, blank=True, null=True)
+    match_candidate_count = models.IntegerField(default=0)
+
+    def increment_match_count(self):
+        self.match_candidate_count += 1
+        self.save()
 
     def __str__(self):
         return f"{self.publisher}: {self.title}"
@@ -195,6 +200,11 @@ class MatchCandidate(models.Model):
     match_confirmed = models.CharField(max_length=3,
                                        choices=MatchConfirmed,
                                        default=MatchConfirmed.NOT)
+
+    def save(self, **kwargs):
+        if self.pk is None:
+            self.register_entry.increment_match_count()
+        super().save(**kwargs)
 
     def __str__(self):
         return (f"{self.register_entry} | {self.library_entry} |"
