@@ -155,10 +155,22 @@ class LibraryEntryAdmin(ImportExportModelAdmin):
 class MatchResource(resources.ModelResource):
 
     class Meta:
-        skip_unchanged = True
-        report_skipped = False
-        fields = ('match_type', 'score', 'register_entry__title',
-                  'library_entry__title')
+        fields = ('id', 'match_type', 'score', 'register_entry__id',
+                  'register_entry__register', 'register_entry__date',
+                  'register_entry__publisher', 'register_entry__title',
+                  'register_entry__clean_title', 'register_entry__block',
+                  'register_entry__page', 'register_entry__line',
+                  'register_entry__creator', 'library_entry__id',
+                  'library_entry__title', 'library_entry__clean_title',
+                  'library_entry__source_library', 'library_entry__register',
+                  'library_entry__min_date', 'library_entry__max_date',
+                  'library_entry__creator', 'library_entry__artifact_type',
+                  'library_entry__publisher', 'library_entry__date_string',
+                  'library_entry__language', 'library_entry__artifact_format',
+                  'library_entry__relation', 'library_entry__rights',
+                  'library_entry__identifier', 'library_entry__description',
+                  'library_entry__subject', 'library_entry__coverage',
+                  'library_entry__contributor', 'library_entry__source')
         model = MatchCandidate
 
 
