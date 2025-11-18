@@ -24,7 +24,7 @@ redo_match_search.short_description = "Redo match search on each entry" \
                                       " in selected registers"
 
 
-def delete_all(modeladmin, request, queryset):
+def delete_no_confirm(modeladmin, request, queryset):
     queryset.delete()
 
 
@@ -71,6 +71,7 @@ class RegisterEntryExportResource(resources.ModelResource):
 
 
 class RegisterEntryAdmin(ImportExportModelAdmin):
+    actions = [delete_no_confirm]
     resource_classes = [
         RegisterEntryImportResource, RegisterEntryExportResource
     ]
@@ -138,6 +139,7 @@ class LibraryEntryExportResource(resources.ModelResource):
 
 
 class LibraryEntryAdmin(ImportExportModelAdmin):
+    actions = [delete_no_confirm]
     resource_classes = [LibraryEntryImportResource, LibraryEntryExportResource]
     inlines = [MatchInline]
     list_display = [
@@ -170,7 +172,7 @@ class MatchResource(resources.ModelResource):
 
 
 class MatchAdmin(ImportExportModelAdmin):
-    actions = [delete_all]
+    actions = [delete_no_confirm]
     resource_classes = [MatchResource]
     list_display = [
         "match_type", "score", "register_entry__title", "library_entry__title",
