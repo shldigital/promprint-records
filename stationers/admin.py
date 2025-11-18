@@ -52,7 +52,8 @@ class RegisterEntryResource(resources.ModelResource):
     class Meta:
         skip_unchanged = True
         report_skipped = False
-        fields = ('id', 'register', 'date', 'publisher', 'title')
+        fields = ('id', 'register', 'date', 'publisher', 'title',
+                  'clean_title', 'block', 'page', 'line', 'creator')
         model = RegisterEntry
 
 
@@ -60,7 +61,8 @@ class RegisterEntryAdmin(ImportExportModelAdmin):
     resource_classes = [RegisterEntryResource]
     inlines = [MatchInline]
     list_display = [
-        "title", "publisher", "date", "register", "_match_count", "_has_match"
+        "title", "publisher", "creator", "register", "block", "page", "line",
+        "_match_count", "_has_match"
     ]
     list_filter = ["register", "matchcandidate__match_confirmed"]
     search_fields = ["title", "publisher"]

@@ -146,10 +146,14 @@ class RegisterEntry(models.Model):
     register = models.ForeignKey(Register, on_delete=models.CASCADE)
     date = models.DateField("date of entry", blank=True, null=True)
     publisher = models.CharField(max_length=100, blank=True, null=True)
-    title = models.CharField(max_length=500)
+    title = models.CharField(max_length=1000)
+    clean_title = models.CharField(max_length=1000, blank=True, null=True)
     volumes = models.CharField(max_length=100, blank=True, null=True)
     edition = models.CharField(max_length=100, blank=True, null=True)
-    register_page = models.IntegerField(default=0)
+    block = models.IntegerField(blank=True, null=True)
+    page = models.IntegerField(blank=True, null=True)
+    line = models.IntegerField(blank=True, null=True)
+    creator = models.CharField(max_length=1000, blank=True, null=True)
 
     def __str__(self):
         return f"{self.publisher}: {self.title}"
