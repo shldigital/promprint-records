@@ -43,7 +43,7 @@ class MatchInline(admin.TabularInline):
     extra = 1
 
 
-class RegisterEntryResource(resources.ModelResource):
+class RegisterEntryImportResource(resources.ModelResource):
     register = fields.Field(column_name='register',
                             attribute='register',
                             widget=widgets.ForeignKeyWidget(Register,
@@ -52,18 +52,28 @@ class RegisterEntryResource(resources.ModelResource):
     class Meta:
         skip_unchanged = True
         report_skipped = False
-        # This will still create a duplicate entry because 'id' is not
-        # included (which it can't be before it's created), BUT it
-        # will at least give the user some hint that they're about to
-        # duplicate (updates look different from creations)
         import_id_fields = ('register', 'publisher', 'title')
+        fields = ('register', 'date', 'publisher', 'title', 'clean_title',
+                  'block', 'page', 'line', 'creator')
+        model = RegisterEntry
+
+
+class RegisterEntryExportResource(resources.ModelResource):
+    register = fields.Field(column_name='register',
+                            attribute='register',
+                            widget=widgets.ForeignKeyWidget(Register,
+                                                            field='name'))
+
+    class Meta:
         fields = ('id', 'register', 'date', 'publisher', 'title',
                   'clean_title', 'block', 'page', 'line', 'creator')
         model = RegisterEntry
 
 
 class RegisterEntryAdmin(ImportExportModelAdmin):
-    resource_classes = [RegisterEntryResource]
+    resource_classes = [
+        RegisterEntryImportResource, RegisterEntryExportResource
+    ]
     inlines = [MatchInline]
     list_display = [
         "title", "publisher", "creator", "register", "block", "page", "line",
